@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Sitile</string>
+    <string name="track_title_hint">Введите заголовок трека</string>
+    <string name="track_title_label">Титул</string>
+    <string name="track_details_label">Детали</string>
+    <string name="track_solved_label">Решено</string>
+    <string name="date_picker_title">Дата события:</string>
+    <string name="new_track">Добавить</string>
+    <string name="show_subtitle">Показать инфо</string>
+    <string name="save">Сохранить</string>
+    <string name="cancel">Удалить</string>
+    <string name="hide_subtitle">Скрыть инфо</string>
+    <string name="subtitle_format">%1$d треков</string>
+    <string name="subtitle_track">%1$d - %2$d</string>
+</resources>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical|center_horizontal|center"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <android.support.v7.widget.RecyclerView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/track_recycler_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+
+
+    <TextView
+        android:id="@+id/track_nolist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@android:dimen/notification_large_icon_width"
+        android:text="No tracks"
+        android:textAlignment="center"
+        android:textSize="18sp" />
+
+    <Button
+    android:id="@+id/track_add_button"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical|bottom|right|top"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="15dp"
+    android:gravity="center_vertical|center_horizontal|center"
+    android:text="Add track"
+    android:textAlignment="center" />
+
+</LinearLayout>

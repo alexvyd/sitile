@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/save_track"
+        android:icon="@drawable/ic_menu_done"
+        android:title="@string/save"
+        app:showAsAction="ifRoom|withText" />
+    <item
+        android:id="@+id/delete_track"
+        android:icon="@drawable/ic_track_delete"
+        android:title="@string/cancel"
+        app:showAsAction="ifRoom|withText" />
+</menu>
