@@ -7,11 +7,9 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,11 +18,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +42,7 @@ public class ListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         //setRetainInstance(true);
+
         new FetchItemsTask().execute();
 
         Handler responseHandler = new Handler();
@@ -58,13 +54,13 @@ public class ListFragment extends Fragment {
                     public void onPicLoaded(trackHolder photoHolder,
                                                       Bitmap bitmap) {
                         Drawable drawable = new BitmapDrawable(getResources(), bitmap);
-                        photoHolder.bindimage(drawable);
+                        photoHolder.bindListPic(drawable);
                     }
                 }
         );
         mPicLoader.start();
         mPicLoader.getLooper();
-        Log.i(TAG, "Background thread started");
+        //Log.i(TAG, "Background thread started");
 
 
 
@@ -118,8 +114,8 @@ public class ListFragment extends Fragment {
     }
 
     private void updateUI() {
-        //TrackBase trackBase = TrackBase.get(getActivity());
-        //List<Track> tracks = trackBase.gettracks();
+        TrackBase trackBase = TrackBase.get(getActivity());
+        List<Track> tracks = trackBase.getTracks();
 
         if (mAdapter == null) {
             mAdapter = new trackAdapter(tracks);
@@ -172,14 +168,14 @@ public class ListFragment extends Fragment {
             startActivityForResult(intent, REQUEST_TRACK);
         }
 
-        public void bind(Track track) {
+        public void bindDetail(Track track) {
             mTrack = track;
             //mCurPosTextView.setText(String.valueOf(pos));
             //mTitleTextView.setText(mTrack.getTitle());
             //mDateTextView.setText(DateFormat.getDateTimeInstance().format(mTrack.getDate()));
             //mBestedImageView.setVisibility(track.isBest() ? View.VISIBLE : View.GONE);
         }
-        public void bindimage(Drawable drawable) {
+        public void bindListPic(Drawable drawable) {
             mTrackImageView.setImageDrawable(drawable);
         }
     }
@@ -217,9 +213,9 @@ public class ListFragment extends Fragment {
         @Override
         public void onBindViewHolder(trackHolder holder, int position) {
             Track track = mTracks.get(position);
-            //holder.bind(track);
+            holder.bindDetail(track);
             Drawable placeholder = getResources().getDrawable(R.drawable.blank);
-            holder.bindimage(placeholder);
+            holder.bindListPic(placeholder);
             mPicLoader.loadPic(holder, track.getUrl());
         }
 
@@ -303,7 +299,8 @@ public class ListFragment extends Fragment {
         }
         @Override
         protected void onPostExecute(List<Track> items) {
-            tracks = items;
+            TrackBase.get(getActivity()).setTracks(items);//создать модель и залить туда картинки
+            //tracks = items;
             updateUI();
         }
     }

@@ -38,8 +38,8 @@ public class PagerActivity extends AppCompatActivity {
         final int listpos = (int) getIntent()
                 .getIntExtra(EXTRA_track_POS,0);
 
-        mViewPager = (ViewPager) findViewById(R.id.track_view_pager);
-        mTracks = TrackBase.get(this).gettracks();
+        mViewPager = findViewById(R.id.track_view_pager);
+        mTracks = TrackBase.get(this).getTracks();
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         mViewPager.setAdapter(new FragmentStatePagerAdapter(fragmentManager) {
@@ -50,7 +50,6 @@ public class PagerActivity extends AppCompatActivity {
             }
 
             @Override
-
             public int getCount() {
                 return mTracks.size();
             }

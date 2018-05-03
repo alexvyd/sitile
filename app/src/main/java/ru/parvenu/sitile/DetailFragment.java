@@ -3,6 +3,9 @@ package ru.parvenu.sitile;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,6 +22,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import java.util.Date;
 import java.util.UUID;
@@ -36,9 +40,10 @@ public class DetailFragment extends Fragment {
 
     private Track mTrack;
     private int listpos,pagepos;
-    private EditText mTitleField;
+    /*private EditText mTitleField;
     private Button mDateButton;
-    private CheckBox mBestedCheckBox;
+    private CheckBox mBestedCheckBox;*/
+    private ImageView mTrackImageBigView;
 
     public static DetailFragment newInstance(UUID trackId, int listpos, int pagepos) {
         Bundle args = new Bundle();
@@ -59,32 +64,18 @@ public class DetailFragment extends Fragment {
         UUID trackId = (UUID) getArguments().getSerializable(ARG_track_ID);
         listpos = (int) getArguments().getInt(ARG_track_LISTPOS);
         pagepos = (int) getArguments().getInt(ARG_track_PAGEPOS);
-        mTrack = TrackBase.get(getActivity()).gettrack(trackId);
+        mTrack = TrackBase.get(getActivity()).getTrack(trackId);
         //mTrack = TrackBase.get(getActivity()).gettrackByPos(trackPos);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_track, container, false);
-        mTitleField = (EditText) v.findViewById(R.id.track_title);
-        mTitleField.setText(mTrack.getTitle());
-        mTitleField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(
-                CharSequence s, int start, int count, int after) {
-                // Здесь намеренно оставлено пустое место
-            }
-            @Override
-            public void onTextChanged(
-                CharSequence s, int start, int before, int count) {
-                mTrack.setTitle(s.toString());
-            }
-            @Override
-            public void afterTextChanged(Editable s) {
-                // И здесь тоже
-            }
-        });
-
+        mTrackImageBigView = v.findViewById(R.id.item_image_bigview);
+        Drawable placeholder = getResources().getDrawable(R.drawable.blank);
+        mTrackImageBigView.setImageDrawable(placeholder);
+        new FetchItemTask().execute();
+        /*
         mDateButton = (Button) v.findViewById(R.id.track_date);
         updateDate();
         mDateButton.setOnClickListener(new View.OnClickListener() {
@@ -106,7 +97,7 @@ public class DetailFragment extends Fragment {
                 mTrack.setBest(isChecked);
             }
         });
-
+        */
 
         String subtitle = getString(R.string.subtitle_track, listpos, pagepos);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -120,8 +111,7 @@ public class DetailFragment extends Fragment {
         Intent data = new Intent();
         data.putExtra(EXTRA_track_PAGEPOS, pagepos);
         getActivity().setResult(Activity.RESULT_OK, data);
-        TrackBase.get(getActivity())
-                .updatetrack(mTrack);
+        //TrackBase.get(getActivity()).updatetrack(mTrack);
     }
     @Override //Передача данных во фрагмент
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -137,7 +127,7 @@ public class DetailFragment extends Fragment {
     }
 
     private void updateDate() {
-        mDateButton.setText(mTrack.getDate().toString());
+        //mDateButton.setText(mTrack.getDate().toString());
     }
 
     @Override
@@ -155,7 +145,7 @@ public class DetailFragment extends Fragment {
                 //getActivity().finish();
                 return true;
             case R.id.delete_track:
-                TrackBase.get(getActivity()).deltrack(mTrack.getId(),listpos);
+                //TrackBase.get(getActivity()).deltrack(mTrack.getId(),listpos);
                 getActivity().onBackPressed();
                 //getActivity().finish();
                 return true;
@@ -165,5 +155,17 @@ public class DetailFragment extends Fragment {
     }
     public static int getPos(Intent result) {
         return result.getIntExtra(EXTRA_track_PAGEPOS, -1);
+    }
+    private class FetchItemTask extends AsyncTask<Void,Void,Bitmap> {
+
+        @Override
+        protected Bitmap doInBackground(Void... params) {
+            return new FlickrFetchr().fetchItem(mTrack.getPhotoUri());
+        }
+        @Override
+        protected void onPostExecute(Bitmap item) {
+            //tracks = items;
+            mTrackImageBigView.setImageBitmap(item);
+        }
     }
 }
