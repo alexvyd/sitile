@@ -3,11 +3,16 @@ package ru.parvenu.sitile;
 import java.util.Date;
 import java.util.UUID;
 
+//Класс треков - центральных объектов приложения
+
 public class Track {
-    private UUID mId;
-    private String mTitle;
+    private UUID mId; //уникальный идентификатор трека
+    private String sId; //внешний идентификатор трека
+    private String mTitle; //Название трека
+    private String mUrl; //Адрес превью
+
     private Date mDate;
-    private boolean mSolved;
+    private boolean mBest; //Статус лучшего
     public int bindpos;
 
 
@@ -22,8 +27,30 @@ public class Track {
         mDate = new Date();
     }
 
+    public Track(String id) {
+        sId = id;
+        mId = UUID.randomUUID();
+        mDate = new Date();
+    }
+
+    public void setUrl(String url) {
+        mUrl=url;
+    }
+
+    public String getUrl() {
+        return mUrl;
+    }
+
+    public void setId(UUID id) {
+        mId=id;
+    }
+
     public UUID getId() {
         return mId;
+    }
+
+    public String getsId() {
+        return sId;
     }
 
     public String getTitle() {
@@ -42,12 +69,12 @@ public class Track {
         mDate = date;
     }
 
-    public boolean isSolved() {
-        return mSolved;
+    public boolean isBest() {
+        return mBest;
     }
 
-    public void setSolved(boolean solved) {
-        mSolved = solved;
+    public void setBest(boolean best) {
+        mBest = best;
     }
 
 

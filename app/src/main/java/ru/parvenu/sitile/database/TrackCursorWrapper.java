@@ -18,11 +18,11 @@ public class TrackCursorWrapper extends CursorWrapper {
         String uuidString = getString(getColumnIndex(trackTable.Cols.UUID));
         String title = getString(getColumnIndex(trackTable.Cols.TITLE));
         long date = getLong(getColumnIndex(trackTable.Cols.DATE));
-        int isSolved = getInt(getColumnIndex(trackTable.Cols.SOLVED));
+        int isBested = getInt(getColumnIndex(trackTable.Cols.BESTED));
         Track track = new Track(UUID.fromString(uuidString));
         track.setTitle(title);
         track.setDate(new Date(date));
-        track.setSolved(isSolved != 0);
+        track.setBest(isBested != 0);
         return track;
     }
 }

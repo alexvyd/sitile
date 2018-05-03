@@ -99,7 +99,7 @@ public class TrackBase {
         values.put(TrackDbSchema.trackTable.Cols.UUID, track.getId().toString());
         values.put(TrackDbSchema.trackTable.Cols.TITLE, track.getTitle());
         values.put(TrackDbSchema.trackTable.Cols.DATE, track.getDate().getTime());
-        values.put(TrackDbSchema.trackTable.Cols.SOLVED, track.isSolved() ? 1 : 0);
+        values.put(TrackDbSchema.trackTable.Cols.BESTED, track.isBest() ? 1 : 0);
         return values;
     }
 

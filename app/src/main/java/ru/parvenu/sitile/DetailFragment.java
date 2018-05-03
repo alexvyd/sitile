@@ -38,7 +38,7 @@ public class DetailFragment extends Fragment {
     private int listpos,pagepos;
     private EditText mTitleField;
     private Button mDateButton;
-    private CheckBox mSolvedCheckBox;
+    private CheckBox mBestedCheckBox;
 
     public static DetailFragment newInstance(UUID trackId, int listpos, int pagepos) {
         Bundle args = new Bundle();
@@ -98,12 +98,12 @@ public class DetailFragment extends Fragment {
             }
         });
 
-        mSolvedCheckBox = (CheckBox)v.findViewById(R.id.track_solved);
-        mSolvedCheckBox.setChecked(mTrack.isSolved());
-        mSolvedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mBestedCheckBox = (CheckBox)v.findViewById(R.id.track_bested);
+        mBestedCheckBox.setChecked(mTrack.isBest());
+        mBestedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mTrack.setSolved(isChecked);
+                mTrack.setBest(isChecked);
             }
         });
 

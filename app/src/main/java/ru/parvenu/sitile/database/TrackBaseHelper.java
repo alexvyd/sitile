@@ -19,7 +19,7 @@ public class TrackBaseHelper extends SQLiteOpenHelper {
                 trackTable.Cols.UUID + ", " +
                 trackTable.Cols.TITLE + ", " +
                 trackTable.Cols.DATE + ", " +
-                trackTable.Cols.SOLVED +
+                trackTable.Cols.BESTED +
                 ")"
         );
     }

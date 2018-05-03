@@ -24,8 +24,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <CheckBox
-        android:id="@+id/track_solved"
+        android:id="@+id/track_bested"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/track_solved_label"/>
+        android:text="@string/track_bested_label"/>
 </LinearLayout>
