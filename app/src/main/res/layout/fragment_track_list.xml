@@ -13,25 +13,4 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
 
-
-    <TextView
-        android:id="@+id/track_nolist"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@android:dimen/notification_large_icon_width"
-        android:text="@string/no_photos"
-        android:textAlignment="center"
-        android:textSize="18sp" />
-
-    <Button
-    android:id="@+id/track_add_button"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center_vertical|bottom|right|top"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="15dp"
-    android:gravity="center_vertical|center_horizontal|center"
-    android:text="@string/add_track"
-    android:textAlignment="center" />
-
 </LinearLayout>

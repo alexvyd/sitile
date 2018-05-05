@@ -2,8 +2,6 @@ package ru.parvenu.sitile;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.Log;
 
@@ -51,13 +49,13 @@ public class FlickrFetchr {
             return new String(getUrlBytes(urlSpec));
         }
 
-    public byte[] getUrlPic(Uri urlSpec) throws IOException {
-        byte[] b = getUrlBytes(urlSpec.toString());
+    public byte[] getUrlPic(String urlSpec) throws IOException {
+        byte[] b = getUrlBytes(urlSpec);
         //Log.i(TAG, "getURlBytes: "+b.length);
         return b;
     }
 
-    public Bitmap fetchItem(Uri url) {
+    public Bitmap fetchItem(String url) {
         Bitmap imag11 = null;
         try {
             byte[] b = getUrlPic(url);

@@ -1,15 +1,10 @@
 package ru.parvenu.sitile;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.support.v4.util.LruCache;
-import android.util.Log;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -98,7 +93,6 @@ public class PicLoader<T> extends HandlerThread {
 
     //выполнение загрузки по необходимости
     private void handleRequest(final T target) {
-        try {
             final String url = mRequestMap.get(target);
             if (url == null) {
                 return;
@@ -108,10 +102,7 @@ public class PicLoader<T> extends HandlerThread {
             final String imageKey = url;
             final Bitmap[] bitmap = {getBitmapFromMemCache(imageKey)};
             if (bitmap[0] == null) {
-                byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
-                bitmap[0] = BitmapFactory
-                        .decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
-                //Log.i(TAG, "Bitmap created");
+                bitmap[0] = new FlickrFetchr().fetchItem(url);
                 addBitmapToMemoryCache(url, bitmap[0]);
             }
 
@@ -127,9 +118,6 @@ public class PicLoader<T> extends HandlerThread {
                 }
             });
 
-        } catch (IOException ioe) {
-            Log.e(TAG, "Error downloading image", ioe);
-        }
     }
 
 

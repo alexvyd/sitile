@@ -12,7 +12,6 @@ import android.support.v4.util.LruCache;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,8 +31,6 @@ public class ListFragment extends Fragment {
     private boolean mSubtitleVisible;
     private static final int REQUEST_TRACK = 1;
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
-    //private TextView mNotracksTextView;
-    //private Button mAddtrackButton;
     private List<Track> tracks = new ArrayList<>();
     private PicLoader<trackHolder> mPicLoader;
 
@@ -59,13 +56,13 @@ public class ListFragment extends Fragment {
                     public void onPicLoaded(trackHolder photoHolder,
                                                       Bitmap bitmap) {
                         Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+                        //Установка картинки после загрузки
                         photoHolder.bindListPic(drawable);
                     }
                 }
         );
         mPicLoader.start();
         mPicLoader.getLooper();
-        //Log.i(TAG, "Background thread started");
 
 
 
@@ -86,15 +83,6 @@ public class ListFragment extends Fragment {
             mSubtitleVisible = savedInstanceState.getBoolean
                     (SAVED_SUBTITLE_VISIBLE);
         }
-        //Надпись нет треков и кнопка добавить
-        /*mNotracksTextView = (TextView) view.findViewById(R.id.track_nolist);
-        mAddtrackButton = (Button) view.findViewById(R.id.track_add_button);
-        mAddtrackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AddTrack();
-            }
-        });*/
         updateUI();
         return view;
     }
@@ -132,53 +120,28 @@ public class ListFragment extends Fragment {
             mAdapter.notifyDataSetChanged();
             //mAdapter.notifyItemChanged(mCurPos);
         }
-        /*if(tracks.size()>0){
-            mNotracksTextView.setVisibility(View.INVISIBLE);
-            mAddtrackButton.setVisibility(View.INVISIBLE);
-        }
-        else {
-            mNotracksTextView.setVisibility(View.VISIBLE);
-            mAddtrackButton.setVisibility(View.VISIBLE);
-        }*/
-
         updateSubtitle();
     }
 
 
     private class trackHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        //private TextView mTitleTextView,mCurPosTextView,mNoTracksTextView;
-        //private TextView mDateTextView;
-        //private ImageView mBestedImageView;
         private ImageView mTrackImageView;
         private Track mTrack;
 
-        //public trackHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
         public trackHolder(View itemView) {
-            //super(inflater.inflate(R.layout.list_item_track, parent, false));
             super(itemView);
             itemView.setOnClickListener(this);
             mTrackImageView=(ImageView) itemView.findViewById(R.id.item_image_view);
-            //mTitleTextView = (TextView) itemView;
-            //mTitleTextView = (TextView) itemView.findViewById(R.id.track_title);
-                //mDateTextView = (TextView) itemView.findViewById(R.id.track_date);
-                //mBestedImageView = (ImageView) itemView.findViewById(R.id.track_bested);
         }
 
         @Override
         public void onClick(View view) {
-            //Toast.makeText(getActivity(),mTrack.getTitle() + " clicked!", Toast.LENGTH_SHORT).show();
-            //Intent intent = new Intent(getActivity(), DetailActivity.class);
-            //Intent intent = DetailActivity.newIntent(getActivity(), mTrack.getId(), mCurPos);
             Intent intent = PagerActivity.newIntent(getActivity(), mTrack.getId(), mTrack.bindpos);
             startActivityForResult(intent, REQUEST_TRACK);
         }
 
         public void bindDetail(Track track) {
             mTrack = track;
-            //mCurPosTextView.setText(String.valueOf(pos));
-            //mTitleTextView.setText(mTrack.getTitle());
-            //mDateTextView.setText(DateFormat.getDateTimeInstance().format(mTrack.getDate()));
-            //mBestedImageView.setVisibility(track.isBest() ? View.VISIBLE : View.GONE);
         }
         public void bindListPic(Drawable drawable) {
 
@@ -192,7 +155,6 @@ public class ListFragment extends Fragment {
             if (data == null) {
                 return;
             }
-            //mCurPos = DetailFragment.getPos(data);
         }
     }
 
@@ -207,10 +169,7 @@ public class ListFragment extends Fragment {
 
         @Override
         public trackHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            //LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-           // TextView textView = new TextView(getActivity());
-            //return new trackHolder(layoutInflater, parent, viewType);
-            //return new trackHolder(textView);
+
             LayoutInflater inflater = LayoutInflater.from(getActivity());
             View view = inflater.inflate(R.layout.list_item_track, parent, false);
             return new trackHolder(view);
@@ -220,8 +179,10 @@ public class ListFragment extends Fragment {
         public void onBindViewHolder(trackHolder holder, int position) {
             Track track = mTracks.get(position);
             holder.bindDetail(track);
-            Drawable placeholder = getResources().getDrawable(R.drawable.blank);//заглушка
+            //Установка заглушки
+            Drawable placeholder = getResources().getDrawable(R.drawable.blank);
             holder.bindListPic(placeholder);
+            //Загрузка картинки
             mPicLoader.loadPic(holder, track.getUrl());
         }
 
@@ -256,8 +217,6 @@ public class ListFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        //int trackSize=TrackBase.get(getActivity()).gettracks().size();
-
         switch (item.getItemId()) {
             case R.id.new_track:
                 AddTrack();
@@ -277,7 +236,6 @@ public class ListFragment extends Fragment {
         TrackBase.get(getActivity()).addtrack(track);
         Intent intent = PagerActivity
                 .newIntent(getActivity(), track.getId(),mAdapter.getItemCount()+1);
-        //startActivity(intent);
         startActivityForResult(intent, REQUEST_TRACK);
     }
 
@@ -287,7 +245,6 @@ public class ListFragment extends Fragment {
         if (!mSubtitleVisible) {
             subtitle = null;
         }
-        //String subtitle = String.valueOf(mCurPos);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.getSupportActionBar().setSubtitle(subtitle);
     }

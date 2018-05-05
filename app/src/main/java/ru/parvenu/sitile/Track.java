@@ -5,7 +5,7 @@ import android.net.Uri;
 import java.util.Date;
 import java.util.UUID;
 
-//Класс треков - центральных объектов приложения
+//Класс фото - центральных объектов приложения
 
 public class Track {
     private UUID mId; //уникальный идентификатор трека
@@ -47,8 +47,8 @@ public class Track {
                 .build();
     }
 
-    public Uri getPhotoUri() {
-        return Uri.parse("https://farm" + mFarm + ".staticflickr.com/" + mServer + "/"+sId+"_" + mSecret + ".jpg");
+    public String getPhotoUri() {
+        return "https://farm" + mFarm + ".staticflickr.com/" + mServer + "/"+sId+"_" + mSecret + ".jpg";
     }
 
     public String getOwner () {
