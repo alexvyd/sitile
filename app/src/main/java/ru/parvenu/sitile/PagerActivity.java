@@ -17,14 +17,17 @@ public class PagerActivity extends AppCompatActivity {
             "ru.parvenu.sitile.track_id";
     private static final String EXTRA_track_POS =
             "ru.parvenu.sitile.track_listpos";
+    private static final String EXTRA_best_SHOW =
+            "ru.parvenu.sitile.best_show";
 
     private ViewPager mViewPager;
     private List<Track> mTracks;
 
-    public static Intent newIntent(Context packageContext, UUID trackId, int listpos) {
+    public static Intent newIntent(Context packageContext, UUID trackId, int listpos, boolean isbest) {
         Intent intent = new Intent(packageContext, PagerActivity.class);
         intent.putExtra(EXTRA_track_ID, trackId);
         intent.putExtra(EXTRA_track_POS, listpos);
+        intent.putExtra(EXTRA_best_SHOW, isbest);
         return intent;
     }
 
@@ -37,16 +40,18 @@ public class PagerActivity extends AppCompatActivity {
                 .getSerializableExtra(EXTRA_track_ID);
         final int listpos = (int) getIntent()
                 .getIntExtra(EXTRA_track_POS,0);
+        final Boolean mBestShow = (boolean) getIntent()
+                .getBooleanExtra(EXTRA_best_SHOW,false);
 
         mViewPager = findViewById(R.id.track_view_pager);
-        mTracks = TrackBase.get(this).getTracks();
+        mTracks = TrackBase.get(this).getTracks(mBestShow);
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         mViewPager.setAdapter(new FragmentStatePagerAdapter(fragmentManager) {
             @Override
             public Fragment getItem(int position) {
                 Track track = mTracks.get(position);
-                return DetailFragment.newInstance(track.getId(), listpos, position);
+                return DetailFragment.newInstance(track.getId(), listpos, position, mBestShow);
             }
 
             @Override

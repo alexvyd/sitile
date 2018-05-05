@@ -17,6 +17,7 @@ public class TrackBase {
 
     private static TrackBase sTrackBase;
     private List<Track> mTracks;
+    private List<Track> mBestTracks;
 
     public static TrackBase get(Context context) {
         if (sTrackBase == null) {
@@ -28,14 +29,28 @@ public class TrackBase {
 
     private TrackBase(Context context) {
         mTracks = new ArrayList<>();
+    }
+
+    public int getSize(boolean isbest) {
+        return !isbest?mTracks.size():mBestTracks.size();
 
     }
 
     public void setTracks(List<Track> tracks) {
+
         mTracks = tracks;
     }
 
-    public List<Track> getTracks() {
+    public List<Track> getTracks(boolean isbest) {
+        if (isbest){
+            mBestTracks = new ArrayList<>();
+            for (Track Track : mTracks) {
+                if (Track.isBest()) {
+                    mBestTracks.add(Track);
+                }
+            }
+            return mBestTracks;
+        }
         return mTracks;
     }
 

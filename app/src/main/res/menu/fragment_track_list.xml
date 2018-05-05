@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/new_track"
-        android:icon="@drawable/ic_menu_add"
-        android:title="@string/new_track"
-        app:showAsAction="ifRoom|withText"/>
-    <item
-        android:id="@+id/show_subtitle"
-        android:title="@string/show_subtitle"
-        app:showAsAction="ifRoom"/>
+        android:id="@+id/best"
+        android:title="@string/show_best"
+        android:icon="@drawable/btn_star_big_off"
+        app:showAsAction="ifRoom|withText"
+        />
+
 </menu>

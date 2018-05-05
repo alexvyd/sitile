@@ -1,17 +1,17 @@
 <resources>
-    <string name="app_name">Фотогалерея</string>
+    <string name="app_name">Фликорама</string>
     <string name="track_title_hint">Введите заголовок трека</string>
     <string name="track_title_label">Титул</string>
     <string name="track_details_label">Детали</string>
     <string name="track_bested_label">Решено</string>
     <string name="date_picker_title">Дата события:</string>
-    <string name="new_track">Добавить</string>
-    <string name="show_subtitle">Показать инфо</string>
-    <string name="save">Сохранить</string>
-    <string name="cancel">Удалить</string>
-    <string name="hide_subtitle">Скрыть инфо</string>
+    <string name="show_best">Показать лучшие</string>
+    <string name="best_on">Отметить</string>
+    <string name="best_off">Снять отметку</string>
+    <string name="show_all">Показать все</string>
     <string name="subtitle_format">%1$d фото</string>
-    <string name="subtitle_track">%1$d - %2$d</string>
+    <string name="close_btn">Вернуться</string>
+    <string name="subtitle_track">Свайп всех</string>
+    <string name="subtitle_track1">Свайп лучших</string>
     <string name="no_photos">Фото нет</string>
-    <string name="add_track">Добавить трек</string>
 </resources>

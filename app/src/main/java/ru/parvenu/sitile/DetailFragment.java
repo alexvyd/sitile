@@ -22,6 +22,7 @@ import java.util.UUID;
 
 public class DetailFragment extends Fragment {
     private static final String ARG_track_ID = "track_id";
+    private static final String ARG_best_SHOW = "best_show";
     private static final String ARG_track_LISTPOS = "track_listpos";
     private static final String ARG_track_PAGEPOS = "track_pagepos";
     private static final String EXTRA_track_LISTPOS =
@@ -30,16 +31,17 @@ public class DetailFragment extends Fragment {
             "ru.parvenu.android.sitile.track_pagepos";
     private static final String DIALOG_DATE = "DialogDate";
     private static final int REQUEST_DATE = 0;
-
     private Track mTrack;
     private int listpos,pagepos;
+    private boolean mBestShow;
     private ImageView mTrackImageBigView;
 
-    public static DetailFragment newInstance(UUID trackId, int listpos, int pagepos) {
+    public static DetailFragment newInstance(UUID trackId, int listpos, int pagepos, boolean isbest) {
         Bundle args = new Bundle();
         args.putSerializable(ARG_track_ID, trackId);
         args.putInt(ARG_track_LISTPOS, listpos);
         args.putInt(ARG_track_PAGEPOS, pagepos);
+        args.putBoolean(ARG_best_SHOW, isbest);
         DetailFragment fragment = new DetailFragment();
         fragment.setArguments(args);
         return fragment;
@@ -52,6 +54,7 @@ public class DetailFragment extends Fragment {
         UUID trackId = (UUID) getArguments().getSerializable(ARG_track_ID);
         listpos = (int) getArguments().getInt(ARG_track_LISTPOS);
         pagepos = (int) getArguments().getInt(ARG_track_PAGEPOS);
+        mBestShow = (boolean) getArguments().getBoolean(ARG_best_SHOW);
         mTrack = TrackBase.get(getActivity()).getTrack(trackId);
 
     }
@@ -65,7 +68,7 @@ public class DetailFragment extends Fragment {
         //загрузка картинки в фоне
         new FetchItemTask().execute();
 
-        String subtitle = getString(R.string.subtitle_track, listpos, pagepos);
+        String subtitle = mBestShow?getString(R.string.subtitle_track1):getString(R.string.subtitle_track);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.getSupportActionBar().setSubtitle(subtitle);
 
@@ -93,18 +96,26 @@ public class DetailFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.fragment_track,menu);
+        inflater.inflate(R.menu.fragment_track, menu);
+        MenuItem bestItem = menu.findItem(R.id.best_turn);
+        if (mTrack.isBest()) {
+            bestItem.setTitle(R.string.best_off);
+            bestItem.setIcon(R.drawable.btn_star_big_on);
+        } else {
+            bestItem.setTitle(R.string.best_on);
+            bestItem.setIcon(R.drawable.btn_star_big_off);
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.save_track:
-                getActivity().onBackPressed();
-                //getActivity().finish();
+            case R.id.close_button:
+                getActivity().finish();
                 return true;
-            case R.id.delete_track:
-                getActivity().onBackPressed();
+            case R.id.best_turn:
+                mTrack.setBest(!mTrack.isBest());
+                getActivity().invalidateOptionsMenu();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

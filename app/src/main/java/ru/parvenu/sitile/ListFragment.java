@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.util.LruCache;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,11 +27,12 @@ public class ListFragment extends Fragment {
     private static final String TAG = "ListFragment";
     private RecyclerView mTrackRecyclerView;
     private trackAdapter mAdapter;
-    private boolean mSubtitleVisible;
+    private boolean mIsBest;
     private static final int REQUEST_TRACK = 1;
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
     private List<Track> tracks = new ArrayList<>();
     private PicLoader<trackHolder> mPicLoader;
+    private TrackBase trackBase;
 
 
 
@@ -40,12 +40,17 @@ public class ListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        trackBase = TrackBase.get(getActivity());
+        tracks = trackBase.getTracks(false);
+
 
         setHasOptionsMenu(true);
         //setRetainInstance(true);
 
         //Загрузка XML-списка
-        new FetchItemsTask().execute();
+        if (tracks.size()==0) {
+            new FetchItemsTask().execute();
+        }
 
         //Настройка загрузки превьюшки "по требованию"
         Handler responseHandler = new Handler();
@@ -80,7 +85,7 @@ public class ListFragment extends Fragment {
         mTrackRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
 
         if (savedInstanceState != null) {
-            mSubtitleVisible = savedInstanceState.getBoolean
+            mIsBest = savedInstanceState.getBoolean
                     (SAVED_SUBTITLE_VISIBLE);
         }
         updateUI();
@@ -107,36 +112,35 @@ public class ListFragment extends Fragment {
     }
 
     private void updateUI() {
-        TrackBase trackBase = TrackBase.get(getActivity());
-        List<Track> tracks = trackBase.getTracks();
-
         if (mAdapter == null) {
             mAdapter = new trackAdapter(tracks);
             if (isAdded()) {
                 mTrackRecyclerView.setAdapter(mAdapter);
             }
         } else {
-            mAdapter.setTracks(tracks);
-            mAdapter.notifyDataSetChanged();
-            //mAdapter.notifyItemChanged(mCurPos);
+            mAdapter.setTracks(trackBase.getTracks(mIsBest));
         }
+        mAdapter.notifyDataSetChanged();
+        //mAdapter.notifyItemChanged(mCurPos);
         updateSubtitle();
     }
 
 
     private class trackHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ImageView mTrackImageView;
+        private ImageView mBestView;
         private Track mTrack;
 
         public trackHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-            mTrackImageView=(ImageView) itemView.findViewById(R.id.item_image_view);
+            mTrackImageView = itemView.findViewById(R.id.item_image_view);
+            mBestView = itemView.findViewById(R.id.bestthumb);
         }
 
         @Override
         public void onClick(View view) {
-            Intent intent = PagerActivity.newIntent(getActivity(), mTrack.getId(), mTrack.bindpos);
+            Intent intent = PagerActivity.newIntent(getActivity(), mTrack.getId(), mTrack.bindpos, mIsBest);
             startActivityForResult(intent, REQUEST_TRACK);
         }
 
@@ -146,6 +150,7 @@ public class ListFragment extends Fragment {
         public void bindListPic(Drawable drawable) {
 
             mTrackImageView.setImageDrawable(drawable);
+            if(mTrack.isBest()) mBestView.setImageResource(R.drawable.btn_star_big_on);
         }
     }
 
@@ -207,23 +212,23 @@ public class ListFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_track_list, menu);
-        MenuItem subtitleItem = menu.findItem(R.id.show_subtitle);
-        if (mSubtitleVisible) {
-            subtitleItem.setTitle(R.string.hide_subtitle);
+        MenuItem bestItem = menu.findItem(R.id.best);
+        if (mIsBest) {
+            bestItem.setTitle(R.string.show_all);
+            bestItem.setIcon(R.drawable.btn_star_big_on);
         } else {
-            subtitleItem.setTitle(R.string.show_subtitle);
+            bestItem.setTitle(R.string.show_best);
+            bestItem.setIcon(R.drawable.btn_star_big_off);
         }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.new_track:
-                AddTrack();
-                return true;
-            case R.id.show_subtitle:
-                mSubtitleVisible = !mSubtitleVisible;
+            case R.id.best:
+                mIsBest = !mIsBest;
                 getActivity().invalidateOptionsMenu();
+                updateUI();
                 updateSubtitle();
                 return true;
             default:
@@ -231,20 +236,9 @@ public class ListFragment extends Fragment {
         }
     }
 
-    private void AddTrack() {
-        Track track = new Track();
-        TrackBase.get(getActivity()).addtrack(track);
-        Intent intent = PagerActivity
-                .newIntent(getActivity(), track.getId(),mAdapter.getItemCount()+1);
-        startActivityForResult(intent, REQUEST_TRACK);
-    }
-
     private void updateSubtitle() {
-        int trackSize=100; //TrackBase.get(getActivity()).tracksSize();
+        int trackSize=trackBase.getSize(mIsBest);
         String subtitle = getString(R.string.subtitle_format, trackSize);
-        if (!mSubtitleVisible) {
-            subtitle = null;
-        }
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.getSupportActionBar().setSubtitle(subtitle);
     }
@@ -252,7 +246,8 @@ public class ListFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(SAVED_SUBTITLE_VISIBLE, mSubtitleVisible);
+        outState.putBoolean(SAVED_SUBTITLE_VISIBLE, mIsBest);
+
     }
 
     private class FetchItemsTask extends AsyncTask<Void,Void,List<Track>> {
@@ -263,7 +258,8 @@ public class ListFragment extends Fragment {
         }
         @Override
         protected void onPostExecute(List<Track> items) {
-            TrackBase.get(getActivity()).setTracks(items);//создать модель и залить туда картинки
+            items.get(0).setBest(true); //демо: первое фото - лучшее
+            trackBase.setTracks(items);//создать модель и залить туда картинки
             //tracks = items;
             updateUI();
         }
