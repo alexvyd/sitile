@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Sitile</string>
+    <string name="app_name">Фотогалерея</string>
     <string name="track_title_hint">Введите заголовок трека</string>
     <string name="track_title_label">Титул</string>
     <string name="track_details_label">Детали</string>
@@ -10,6 +10,8 @@
     <string name="save">Сохранить</string>
     <string name="cancel">Удалить</string>
     <string name="hide_subtitle">Скрыть инфо</string>
-    <string name="subtitle_format">%1$d треков</string>
+    <string name="subtitle_format">%1$d фото</string>
     <string name="subtitle_track">%1$d - %2$d</string>
+    <string name="no_photos">Фото нет</string>
+    <string name="add_track">Добавить трек</string>
 </resources>

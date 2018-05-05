@@ -53,7 +53,7 @@ public class FlickrFetchr {
 
     public byte[] getUrlPic(Uri urlSpec) throws IOException {
         byte[] b = getUrlBytes(urlSpec.toString());
-        Log.i(TAG, "getURlBytes: "+b.length);
+        //Log.i(TAG, "getURlBytes: "+b.length);
         return b;
     }
 

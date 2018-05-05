@@ -5,8 +5,10 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+import android.support.v4.util.LruCache;
 import android.util.Log;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -20,16 +22,43 @@ public class PicLoader<T> extends HandlerThread {
 
     private Handler mResponseHandler;
     private PicLoadListener<T> mPicLoadListener;
-    public interface PicLoadListener<T> {
-        void onPicLoaded(T target, Bitmap thumbnail);
-    }
-    public void setPicLoadListener(PicLoadListener<T> listener) {
-        mPicLoadListener = listener;
-    }
+    private LruCache<String, Bitmap> mMemoryCache;
+
+
 
     public PicLoader(Handler responseHandler) {
         super(TAG);
         mResponseHandler = responseHandler;
+
+        //Настраиваем кеш в памяти
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        final int cacheSize = maxMemory / 8;
+        mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap) {
+                return bitmap.getByteCount() / 1024;
+            }
+        };
+
+
+    }
+
+    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if (getBitmapFromMemCache(key) == null) {
+            mMemoryCache.put(key, bitmap);
+        }
+    }
+
+    public Bitmap getBitmapFromMemCache(String key) {
+        return mMemoryCache.get(key);
+    }
+
+    public interface PicLoadListener<T> {
+        void onPicLoaded(T target, Bitmap thumbnail);
+    }
+
+    public void setPicLoadListener(PicLoadListener<T> listener) {
+        mPicLoadListener = listener;
     }
 
     @Override
@@ -67,16 +96,24 @@ public class PicLoader<T> extends HandlerThread {
         mRequestMap.clear();
     }
 
+    //выполнение загрузки по необходимости
     private void handleRequest(final T target) {
         try {
             final String url = mRequestMap.get(target);
             if (url == null) {
                 return;
             }
-            byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
-            final Bitmap bitmap = BitmapFactory
-                    .decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
-            //Log.i(TAG, "Bitmap created");
+
+            //проверка наличия в кеше
+            final String imageKey = url;
+            final Bitmap[] bitmap = {getBitmapFromMemCache(imageKey)};
+            if (bitmap[0] == null) {
+                byte[] bitmapBytes = new FlickrFetchr().getUrlBytes(url);
+                bitmap[0] = BitmapFactory
+                        .decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
+                //Log.i(TAG, "Bitmap created");
+                addBitmapToMemoryCache(url, bitmap[0]);
+            }
 
             mResponseHandler.post(new Runnable() {
                 public void run() {
@@ -86,7 +123,7 @@ public class PicLoader<T> extends HandlerThread {
                     }
                     mRequestMap.remove(target);
                     mPicLoadListener.onPicLoaded(target,
-                            bitmap);
+                            bitmap[0]);
                 }
             });
 
@@ -94,4 +131,7 @@ public class PicLoader<T> extends HandlerThread {
             Log.e(TAG, "Error downloading image", ioe);
         }
     }
+
+
 }
+

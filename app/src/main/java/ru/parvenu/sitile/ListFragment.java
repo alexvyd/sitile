@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.LruCache;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,16 +38,20 @@ public class ListFragment extends Fragment {
     private PicLoader<trackHolder> mPicLoader;
 
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         setHasOptionsMenu(true);
         //setRetainInstance(true);
 
+        //Загрузка XML-списка
         new FetchItemsTask().execute();
 
+        //Настройка загрузки превьюшки "по требованию"
         Handler responseHandler = new Handler();
-
         mPicLoader = new PicLoader<>(responseHandler);
         mPicLoader.setPicLoadListener(
                 new PicLoader.PicLoadListener<trackHolder>() {
@@ -104,7 +109,7 @@ public class ListFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         mPicLoader.quit();
-        Log.i(TAG, "Background thread destroyed");
+        //Log.i(TAG, "Background thread destroyed");
     }
 
     @Override
@@ -176,6 +181,7 @@ public class ListFragment extends Fragment {
             //mBestedImageView.setVisibility(track.isBest() ? View.VISIBLE : View.GONE);
         }
         public void bindListPic(Drawable drawable) {
+
             mTrackImageView.setImageDrawable(drawable);
         }
     }
@@ -214,7 +220,7 @@ public class ListFragment extends Fragment {
         public void onBindViewHolder(trackHolder holder, int position) {
             Track track = mTracks.get(position);
             holder.bindDetail(track);
-            Drawable placeholder = getResources().getDrawable(R.drawable.blank);
+            Drawable placeholder = getResources().getDrawable(R.drawable.blank);//заглушка
             holder.bindListPic(placeholder);
             mPicLoader.loadPic(holder, track.getUrl());
         }
@@ -235,6 +241,7 @@ public class ListFragment extends Fragment {
         }
 
     }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
